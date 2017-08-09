@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var options = new AjaxOptions()
+    {
+        UpdateTargetId = "tabledata",
+        Url = Url.Action("JsonGetSortedHistory"),
+        LoadingElementId = "loadingIndicator",
+        OnSuccess = "ParseResponse",
+    };
+
+
+}
+
+<Strong><h1>Requests History</h1></Strong><br />
+<br />
+@using (Ajax.BeginForm(options))
+{
+    <div id="loadingIndicator" style="display:none;">Loading...</div>
+    <p>
+        @Html.DropDownList("id", new SelectList(ViewBag.AllDomens))
+        <input type="submit" class="myButton" value="Select history to view please" />
+    </p>
+    <table cellpadding="4" border="2" cellpadding="3"
+           style="border-collapse: collapse; border: 1px solid black;">
+        <thead>
+
+        <tbody id="MainTable"></tbody>
+
+        </thead>
+        <thead>
+        
+        <tbody id="tabledata"></tbody>
+
+        </thead>
+
+    </table>
+
+}
+
+@section scripts
+{
+    
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    @*geting history from database*@
+    <script type="text/javascript">
+        function ParseResponse(data) {
+
+            var target = $("#tabledata");
+            Table();
+            target.empty();
+            for (var i = 0; i < data.length; i++) {
+                target.append("<tr><td>" +
+                    data[i].Url +
+                    "</td><td>" +
+                    data[i].MinTime +
+                    "</td><td>" +
+                    data[i].MaxTime +
+                    "</td></tr>");
+            }
+        }
+        function Table() {
+            var target = $("#MainTable");
+            target.empty();
+            target.append("<tr><th>Url</th><th>MinTime</th><th>MaxTime</th></tr>");
+        }
+        
+
+
+
+    </script>
+}
+

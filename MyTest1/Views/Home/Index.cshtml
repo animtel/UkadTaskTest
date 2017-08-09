@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    @*getting main table*@
+var options = new AjaxOptions()
+{
+    UpdateTargetId = "tabledata",
+    Url = Url.Action("JsonPrs"),
+    LoadingElementId = "loadingIndicator",
+    OnSuccess = "ParseResponse",
+};
+}
+
+<Strong><p><h1>Test Url Speed</h1></p></Strong><br />
+
+@using (Ajax.BeginForm(options))
+{
+    <div id="loadingIndicator" style="display:none;">Loading...</div>
+    <p>
+        @Html.TextBox("id")
+        <input type="submit" @*class="btn btn-info"*@ value="Test Speed" />
+        
+    </p>
+    <table cellpadding="4" border="2" cellpadding="3"
+           style="border-collapse: collapse; border: 1px solid black;">
+        <thead>
+
+        <tbody id="MainTable"></tbody>
+
+
+        </thead>
+
+        <tbody id="tabledata"></tbody>
+       
+    </table>
+
+}
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+@*Parsing Json Responce from the server*@
+    <script type="text/javascript">
+
+        var sortedData = null;
+        var start = 0;
+
+        function ParseResponse(data) {
+            start = 0;
+            sortedData = data;
+            if (data.length == 0) {
+                ErrorTable();
+            } else {
+                UpdateTable(data);
+                for (var i = 0; i < data.length; i++) {
+                    updateMinMax(data[i].Url);
+
+                }
+            }
+
+
+        }
+
+        function Table() {
+            var target = $("#MainTable");
+            target.empty();
+            target.append("<th>Url</th><th>MinTime</th><th>MaxTime</th>");
+        }
+
+        function ErrorTable() {
+            var target = $("#MainTable");
+            target.empty();
+            target.append("Error. We can't find sitemap. Please enter another url.");
+        }
+        @*update main table*@
+        function updateMinMax(dataPost) {
+            $.ajax({
+                url: "@Url.Action("JsonPrsTimeOuts")",
+                type: "POST",
+
+                dataType: "json",
+                data: { "url": dataPost },
+                success: function(resp) {
+                    updateData(resp);
+                }
+            });
+        }
+
+        function updateData(resp) {
+            for (var i = 0; i < sortedData.length; i++) {
+                if (sortedData[i].Url == resp.Url) {
+                    sortedData[i].MinTime = resp.MinTime;
+                    sortedData[i].MaxTime = resp.MaxTime;
+                    UpdateTable(sortedData);
+
+                }
+
+            }
+        }
+        @*sorting data on the server*@
+        function sortData() {
+            $.ajax({
+                url: "@Url.Action("FinalSort")",
+                type: "POST",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(sortedData),
+                success: function(resp) {
+                    UpdateTable(resp);
+                }
+            });
+        }
+
+        function AddUpdateTable(data) {
+
+            var target = $("#tabledata");
+            target.append("<tr><td>" +
+                data.Url +
+                "</td><td>" +
+                GetNumOrGif(data.MinTime) +
+                "</td><td>" +
+                GetNumOrGif(data.MaxTime) +
+                "</td></tr>");
+        }
+
+        @*main function for updating table*@
+        function UpdateTable(data) {
+            start++;
+            var target = $("#tabledata");
+            target.empty();
+            Table();
+            for (var i = 0; i < data.length; i++) {
+                target.append("<tr><td>" +
+                    data[i].Url +
+                    "</td><td>" +
+                    GetNumOrGif(data[i].MinTime) +
+                    "</td><td>" +
+                    GetNumOrGif(data[i].MaxTime) +
+                    "</td></tr>");
+            }
+            if (start == sortedData.length + 1) {
+                sortData();
+            }
+        }
+        @*animation*@
+        function GetNumOrGif(line) {
+            if (line == 0) {
+                if (start == sortedData.length + 1) {
+                    return "error";
+                }
+                return "<img src=@Url.Content("~/Content/7.gif") alt=\"Loading\" title=\"Loading\" />";
+            }
+
+            return line;
+        }
+    </script>
+}
+
