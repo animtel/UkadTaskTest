@@ -3,21 +3,25 @@
     @*getting main table*@
 var options = new AjaxOptions()
 {
-    UpdateTargetId = "tabledata",
-    Url = Url.Action("JsonPrs"),
-    LoadingElementId = "loadingIndicator",
-    OnSuccess = "ParseResponse",
+    UpdateTargetId = "tabledata", //указываем на id элемента, в котором будут выводиться результаты запроса
+    Url = Url.Action("JsonPrs"),//устанавливаем адрес Url сервера, на который отправляется запрос. 
+                                //Установив данное свойство, можно не использовать название имя контроллера и его действие в качестве параметров Ajax.BeginForm
+    LoadingElementId = "loadingIndicator",//устанавливаем id элемента html-страницы, который будет отображаться во время запроса. 
+//Обычно это какая-нибудь анимация, которая дает знать, что некоторая работа выполняется в фоновом режиме
+    OnSuccess = "ParseResponse",//задаем обратный вызов, который вызывается после удачного выполнения запроса. Соотносится с событием success библиотеки jQuery
 };
 }
 
 <Strong><p><h1>Test Url Speed</h1></p></Strong><br />
 
 @using (Ajax.BeginForm(options))
+//Хелпер Ajax.BeginForm похож на хелпер Html.BeginForm - он также создает элемент form, который используется для отправки запроса на сервер. 
+//Первый параметр принимает имя действия, к которому будет обращен запрос.
 {
     <div id="loadingIndicator" style="display:none;">Loading...</div>
     <p>
         @Html.TextBox("id")
-        <input type="submit" @*class="btn btn-info"*@ value="Test Speed" />
+        <input type="submit" value="Test Speed" />
         
     </p>
     <table cellpadding="4" border="2" cellpadding="3"
@@ -25,7 +29,6 @@ var options = new AjaxOptions()
         <thead>
 
         <tbody id="MainTable"></tbody>
-
 
         </thead>
 

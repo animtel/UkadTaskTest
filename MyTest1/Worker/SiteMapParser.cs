@@ -12,19 +12,19 @@ namespace MyTest1.Worker
 {
     public class SiteMapParser
     {
-        private Request request;
-        private List<CheckUrl> requestTimeots;
-        private string host;
-        private string result;
-        private int plus1;
+        private Request _request;
+        private List<CheckUrl> _requestTimeots;
+        private string _host;
+        private string _result;
+        private int _plus1;
 
         public SiteMapParser()
         {
-            request = new Request();
-            requestTimeots = new List<CheckUrl>();
-            host = string.Empty;
-            result = "";
-            plus1 = 0;
+            _request = new Request();
+            _requestTimeots = new List<CheckUrl>();
+            _host = string.Empty;
+            _result = "";
+            _plus1 = 0;
         }
 
         public List<CheckUrl> Test(string Url)
@@ -39,20 +39,20 @@ namespace MyTest1.Worker
 
             if (Url.EndsWith(".xml"))
             {
-                host = Url;
+                _host = Url;
             }
             else
             {
                 Uri uriUrl = new Uri(Url);
-                host = new Uri(uriUrl, "/sitemap.xml").ToString();
+                _host = new Uri(uriUrl, "/sitemap.xml").ToString();
             }
             GetUrlList();
-            return requestTimeots;
+            return _requestTimeots;
         }
 
         private void GetUrlList()
         {
-            string ContentXml = request.GetUrl(host);
+            string ContentXml = _request.GetUrl(_host);
             /*
              * I can use XmlDocument but some sitemaps is different.
              * I will use Regex. It is solid.
@@ -70,14 +70,14 @@ namespace MyTest1.Worker
                         AddToList.Url = itemStr;
                         AddToList.MinTime = 0;
                         AddToList.MaxTime = 0;
-                        requestTimeots.Add(AddToList); // Add urls for test
+                        _requestTimeots.Add(AddToList); // Add urls for test
                     }
                 }
             }
             else // if sitemap is empty we need build our list
             {
-                Uri uriUrl = new Uri(host);
-                host = new Uri(uriUrl, "/").ToString();
+                Uri uriUrl = new Uri(_host);
+                _host = new Uri(uriUrl, "/").ToString();
                 string[] urls = BuildSitemap();
                 foreach (string url in urls)
                 {
@@ -86,7 +86,7 @@ namespace MyTest1.Worker
                     AddToList.Url = url;
                     AddToList.MinTime = 0;
                     AddToList.MaxTime = 0;
-                    requestTimeots.Add(AddToList); // Add urls for test
+                    _requestTimeots.Add(AddToList); // Add urls for test
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace MyTest1.Worker
             int MaxVal = 0;
             for (int i = 0; i < 3; i++)
             {
-                int TestValue = request.GetUrlTime(url);
+                int TestValue = _request.GetUrlTime(url);
                 if (TestValue > 0)
                 {
                     if (MinVal == 0 || MinVal > TestValue)
@@ -143,7 +143,7 @@ namespace MyTest1.Worker
 
             CheckUrl AddToList = new CheckUrl();
 
-            AddToList.Host = host;
+            AddToList.Host = _host;
             AddToList.Url = url;
             AddToList.MinTime = MinVal;
             AddToList.MaxTime = MaxVal;
@@ -158,7 +158,7 @@ namespace MyTest1.Worker
         private string[] BuildSitemap()
         {
             List<string> allurls = new List<string>();
-            allurls.Add(host);
+            allurls.Add(_host);
             for (int i = 0; i < allurls.Count; i++)
             {
                 string urlToCheck = allurls[i];
@@ -170,11 +170,11 @@ namespace MyTest1.Worker
 
         void Finder(string urlToCheck, List<string> allurls)
         {
-            string responce = request.GetUrl(urlToCheck);
+            string responce = _request.GetUrl(urlToCheck);
             responce = HttpUtility.HtmlDecode(responce);
             HtmlDocument document = new HtmlAgilityPack.HtmlDocument();
             document.LoadHtml(responce);
-            var baseUrl = new Uri(host);
+            var baseUrl = new Uri(_host);
             var noder = document.DocumentNode.SelectNodes("//a[@href]");
             if (noder != null)
             {
