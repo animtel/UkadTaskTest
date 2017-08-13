@@ -20,10 +20,11 @@
     <div id="loadingIndicator" style="display:none;">Loading...</div>
     <p>
         @Html.DropDownList("id", new SelectList(ViewBag.AllDomens))
-        <input type="submit" class="myButton" value="Select history to view please" />
+        
+        <input type="submit" class="btn btn-info" value="Select history to view please" />
     </p>
-    <table cellpadding="4" border="2" cellpadding="3"
-           style="border-collapse: collapse; border: 1px solid black;">
+    <table border="2" cellpadding="3"
+           class="table table-striped">
         <thead>
 
         <tbody id="MainTable"></tbody>

@@ -15,34 +15,40 @@ var options = new AjaxOptions()
 <Strong><p><h1>Test Url Speed</h1></p></Strong><br />
 
 @using (Ajax.BeginForm(options))
-//Хелпер Ajax.BeginForm похож на хелпер Html.BeginForm - он также создает элемент form, который используется для отправки запроса на сервер. 
+//Хелпер Ajax.BeginForm похож на хелпер Html.BeginForm - он также создает элемент form, который используется для отправки запроса на сервер.
 //Первый параметр принимает имя действия, к которому будет обращен запрос.
 {
-    <div id="loadingIndicator" style="display:none;">Loading...</div>
-    <p>
-        @Html.TextBox("id")
-        <input type="submit" value="Test Speed" />
-        
-    </p>
-    <table cellpadding="4" border="2" cellpadding="3"
-           style="border-collapse: collapse; border: 1px solid black;">
-        <thead>
+    
+        <div id="loadingIndicator" style="display:none;">Loading...</div>
 
-        <tbody id="MainTable"></tbody>
 
-        </thead>
 
-        <tbody id="tabledata"></tbody>
-       
-    </table>
+        <p>
+            @Html.TextBox("id")
+            
+            <input type="submit" class="btn btn-info" value="Test Speed" />
+        </p>
+
+        //таблица вывода информации
+            <table border="2" cellpadding="3"
+                   class="table table-striped">
+                <thead>
+                <tbody id="MainTable"></tbody>
+                </thead>
+                <thead>
+
+                <tbody id="tabledata"></tbody>
+                </thead>
+
+            </table>
+
 
 }
-
-@section scripts
+        @section scripts
 {
-    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
-@*Parsing Json Responce from the server*@
-    <script type="text/javascript">
+            <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+            @*Parsing Json Responce from the server*@
+            <script type="text/javascript">
 
         var sortedData = null;
         var start = 0;
@@ -66,7 +72,7 @@ var options = new AjaxOptions()
         function Table() {
             var target = $("#MainTable");
             target.empty();
-            target.append("<th>Url</th><th>MinTime</th><th>MaxTime</th>");
+            target.append("<tr><th>Url</th><th>MinTime</th><th>MaxTime</th></tr>");
         }
 
         function ErrorTable() {
@@ -74,6 +80,7 @@ var options = new AjaxOptions()
             target.empty();
             target.append("Error. We can't find sitemap. Please enter another url.");
         }
+
         @*update main table*@
         function updateMinMax(dataPost) {
             $.ajax({
@@ -99,6 +106,7 @@ var options = new AjaxOptions()
 
             }
         }
+
         @*sorting data on the server*@
         function sortData() {
             $.ajax({
@@ -144,6 +152,8 @@ var options = new AjaxOptions()
                 sortData();
             }
         }
+
+
         @*animation*@
         function GetNumOrGif(line) {
             if (line == 0) {
@@ -155,6 +165,5 @@ var options = new AjaxOptions()
 
             return line;
         }
-    </script>
-}
-
+            </script>
+        }
